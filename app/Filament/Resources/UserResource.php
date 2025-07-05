@@ -17,7 +17,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     public static function form(Form $form): Form
     {
@@ -31,7 +31,31 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('prenom')
+                ->label('Prénom')
+                ->sortable()
+                ->searchable(),
+
+            Tables\Columns\TextColumn::make('nom')
+                ->label('Nom')
+                ->sortable()
+                ->searchable(),
+
+            Tables\Columns\TextColumn::make('email')
+                ->label('Email')
+                ->sortable()
+                ->searchable()
+                ->copyable(),
+
+            Tables\Columns\TextColumn::make('phone')
+                ->label('Téléphone')
+                ->toggleable(),
+
+            Tables\Columns\TextColumn::make('role')
+                ->label('Role')
+              
+                ->sortable()
+               
             ])
             ->filters([
                 //
@@ -52,7 +76,7 @@ class UserResource extends Resource
             //
         ];
     }
-
+  
     public static function getPages(): array
     {
         return [

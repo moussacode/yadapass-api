@@ -8,32 +8,35 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Payement extends Model
+class Paiement extends Model
 {
 
     use HasFactory;
-    protected $fillable = [
-    'montant',
-    'date',
-    'etudiant_id',
-    'fee_id',
-    'admin_id',
-];
-     // Relation vers l'étudiant qui effectue le paiement
+   protected $fillable = [
+        'montant', 'date', 'etudiant_id', 'fee_id', 'admin_id'
+    ];
+
+    protected $casts = [
+        'date' => 'date',
+    ];
+
     public function etudiant()
     {
         return $this->belongsTo(Etudiant::class);
     }
 
-    // Relation vers le frais (fee) payé
     public function fee()
     {
         return $this->belongsTo(Fee::class);
     }
 
-    // Relation vers l'admin qui a validé/enregistré le paiement (optionnel)
     public function admin()
     {
         return $this->belongsTo(User::class, 'admin_id');
+    }
+
+    public function getMontantFormateAttribute()
+    {
+        return number_format($this->montant, 0, ',', ' ') . ' FCFA';
     }
 }

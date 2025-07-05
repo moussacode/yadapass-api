@@ -7,12 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class PersonnelSecurite extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'nom',
+        'prenom',
+        'email',
+        'password',
+        'poste',
+        'phone',
+    ];
 
-    protected $fillable = ['user_id'];
+    protected $hidden = ['password'];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    // Ajoute si tu veux utiliser l'auth (Authenticatable)
 }

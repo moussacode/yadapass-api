@@ -8,31 +8,30 @@ class Etudiant extends Model
 {
     protected $fillable = [
         'matricule',
-        'user_id',
+        'nom',
+        'prenom',
         'photo',
         'adresse',
         'telephone',
         'date_naissance',
         'genre',
-        'class_room_id',
+        'nationalite',
     ];
 
-   
-
-    /**
-     * Get the carte etudiante associated with the etudiant.
-     */
-   public function carteEtudiante()
+    public function carteEtudiante()
+    {
+        return $this->hasOne(CarteEtudiante::class);
+    }
+    public function attributions()
 {
-    return $this->hasOne(CarteEtudiante::class);
+    return $this->hasMany(Attribution::class);
 }
-public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-    public function classRoom()
-    {
-        return $this->belongsTo(ClassRoom::class);
-    }
-
+public function getNomCompletAttribute()
+{
+    return $this->nom . ' ' . $this->prenom;
+}
+public function paiements()
+{
+    return $this->hasMany(Paiement::class);
+}
 }

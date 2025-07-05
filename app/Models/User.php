@@ -54,8 +54,7 @@ class User extends Authenticatable implements FilamentUser, HasName
 
     // Définition des rôles
     const ROLE_ADMIN = 'admin';
-    const ROLE_ETUDIANT = 'etudiant';
-    const ROLE_AGENT = 'agent';
+    
 
     // Relations vers les rôles spécifiques
     public function administrateur()
@@ -63,15 +62,6 @@ class User extends Authenticatable implements FilamentUser, HasName
         return $this->hasOne(Administrateur::class);
     }
 
-    public function etudiant()
-    {
-        return $this->hasOne(Etudiant::class);
-    }
-
-    public function personnelSecurite()
-    {
-        return $this->hasOne(PersonnelSecurite::class);
-    }
 
     // Méthodes utilitaires
     public function isAdmin(): bool
@@ -79,16 +69,7 @@ class User extends Authenticatable implements FilamentUser, HasName
         return $this->role === self::ROLE_ADMIN;
     }
 
-    public function isEtudiant(): bool
-    {
-        return $this->role === self::ROLE_ETUDIANT;
-    }
-
-    public function isAgent(): bool
-    {
-        return $this->role === self::ROLE_AGENT;
-    }
-
+    
     // Autorisation d'accès à Filament
     public function canAccessPanel(Panel $panel): bool
     {

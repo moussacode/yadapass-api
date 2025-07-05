@@ -13,18 +13,18 @@ class Cours extends Model
         'nom',
         'code',
         'enseignant',
-        'class_room_id',
         'admin_id',
     ];
 
-    // Relation : un cours appartient à une classe
-    public function classRoom()
-    {
-        return $this->belongsTo(ClassRoom::class);
-    }
+    // Relation : un cours appartient à plusieur classe
+ 
     public function emploisDuTemps()
 {
     return $this->hasMany(EmploiDuTemps::class);
+}
+public function classRooms()
+{
+    return $this->belongsToMany(ClassRoom::class, 'class_room_cours');
 }
 
     // Relation : un cours appartient à un administrateur (créateur/gestionnaire)
@@ -32,4 +32,10 @@ class Cours extends Model
     {
         return $this->belongsTo(User::class, 'admin_id');
     }
+     public function getAcademicSessionsAttribute()
+    {
+        return $this->classRooms()->with('academicSession')->get()
+            ->pluck('academicSession')->unique('id');
+    }
+    
 }

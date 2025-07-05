@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('personnel_securites', function (Blueprint $table) {
             $table->id();
+            $table->string('nom');
+            $table->string('prenom');
+            $table->string('email')->unique();
+            $table->string('poste')->nullable(); // Exemple : "gardien", "chef de poste", etc.
+            $table->string('password'); // pour auth API
+            $table->string('phone')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
     }

@@ -12,18 +12,18 @@ class Fee extends Model
 {
 
     use HasFactory;
-    protected $fillable = ['nom', 'montant_total', 'class_room_id', 'academic_session_id'];
-    /// Relations possibles
-    
-    // Une fee appartient à une classe
+    protected $fillable = ['nom', 'type', 'montant_total', 'class_room_id'];
+
     public function classRoom()
     {
         return $this->belongsTo(ClassRoom::class);
     }
 
-    // Une fee appartient à une session académique
-    public function academicSession()
+    public function paiements()
     {
-        return $this->belongsTo(AcademicSession::class);
+        return $this->hasMany(Paiement::class);
     }
+    
+
+    
 }

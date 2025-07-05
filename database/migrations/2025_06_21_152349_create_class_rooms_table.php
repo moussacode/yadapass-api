@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('class_rooms', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();  
-            $table->integer('sort')->unique();
+            $table->string('name');
             $table->foreignId('academic_session_id')->constrained()->onDelete('cascade');
+            $table->unique(['name', 'academic_session_id']);
             $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });

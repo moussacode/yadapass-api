@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nom'); // Nom du cours
             $table->string('code')->unique(); // Code unique du cours (ex: INF101)
-            $table->string('enseignant')->nullable(); 
-            $table->foreignId('class_room_id')->constrained()->onDelete('cascade'); // Classe liée
+            $table->string('enseignant')->nullable();  
             $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });

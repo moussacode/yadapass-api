@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('carte_etudiantes', function (Blueprint $table) {
            $table->id();
-    $table->foreignId('etudiant_id')->constrained()->onDelete('cascade');
+     $table->foreignId('attribution_id')->constrained('attributions')->onDelete('cascade');
     $table->string('qr_code')->unique();
+    $table->string('qr_data')->nullable();
     $table->string('statut')->default('active');
     $table->date('date_emission')->nullable();
-    $table->date('date_expiration')->nullable();
     $table->timestamps();
         });
     }
