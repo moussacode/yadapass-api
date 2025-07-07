@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AttributionResource\Pages;
 use App\Filament\Resources\AttributionResource\RelationManagers;
 use App\Models\Attribution;
+use Filament\Tables\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -92,6 +93,42 @@ class AttributionResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                
+                
+                Action::make('view_card')
+                    ->label('Voir carte')
+                    ->icon('heroicon-o-identification')
+                    ->color('info')
+                    ->visible(fn ($record) => $record->carteEtudiante)
+                    ->url(fn ($record) => route('carte.preview', $record->carteEtudiante))
+                    ->openUrlInNewTab(),
+
+                Action::make('print_card')
+                    ->label('Imprimer carte')
+                    ->icon('heroicon-o-printer')
+                    ->color('success')
+                    ->visible(fn ($record) => $record->carteEtudiante)
+                    ->url(fn ($record) => route('carte.print', $record->carteEtudiante))
+                    ->openUrlInNewTab(),
+
+                Action::make('generate_card')
+                    ->label('Générer carte')
+                    ->icon('heroicon-o-plus')
+                    ->color('warning')
+                    ->visible(fn ($record) => !$record->carteEtudiante)
+                    ->action(function ($record) {
+                        \App\Models\CarteEtudiante::create([
+                            'attribution_id' => $record->id,
+                            'qr_code' => strtoupper($record->etudiant->matricule),
+                            'qr_data' => strtoupper($record->etudiant->matricule),
+                            'statut' => 'active',
+                            'date_emission' => now(),
+                        ]);
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Générer la carte étudiante')
+                    ->modalDescription('Êtes-vous sûr de vouloir générer une carte pour cet étudiant ?')
+                    ->modalSubmitActionLabel('Générer'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
