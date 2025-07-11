@@ -26,6 +26,7 @@ class Attribution extends Model
     return $this->belongsTo(AcademicSession::class);
 }
 
+
 public function carteEtudiante()
 {
     return $this->hasOne(CarteEtudiante::class); // si tu fais la carte après attribution

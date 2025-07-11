@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\EmploiDuTemps;
 
 class Etudiant extends Model
 {
@@ -34,4 +35,30 @@ public function paiements()
 {
     return $this->hasMany(Paiement::class);
 }
+
+
+public function getEmploiDuTemps()
+{
+    $attribution = $this->attributions()->latest()->first();
+
+    if (!$attribution || !$attribution->classRoom) {
+        return [];
+    }
+
+    // Charger les emplois du temps de la classe, avec les relations utiles
+    return EmploiDuTemps::with(['cours', 'salle'])
+        ->where('class_room_id', $attribution->classRoom->id)
+        ->orderByRaw("FIELD(jour, 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche')")
+        ->orderBy('heure_debut')
+        ->get()
+        ->map(function ($e) {
+            return [
+                'jour' => $e->jour,
+                'creneau' => $e->creneau,
+                'cours' => $e->cours->nom ?? 'N/A',
+                'salle' => $e->salle->nom ?? 'N/A',
+            ];
+        });
+}
+
 }

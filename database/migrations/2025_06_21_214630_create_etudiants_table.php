@@ -21,8 +21,7 @@ return new class extends Migration
     $table->string('telephone')->nullable();
     $table->date('date_naissance')->nullable();
     $table->string('genre')->nullable();
-    $table->string('nationalite')->nullable();
-            
+    $table->string('nationalite')->nullable();     
             $table->timestamps();
         });
     }
