@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('paiements', function (Blueprint $table) {
             $table->id();
-          $table->foreignId('etudiant_id')->constrained()->onDelete('cascade');
-    $table->foreignId('fee_id')->constrained()->onDelete('cascade');
-    $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
-    $table->integer('montant');
-    $table->date('date');
-    $table->timestamps();
+            $table->foreignId('etudiant_id')->constrained()->onDelete('cascade');
+            $table->foreignId('fee_id')->constrained()->onDelete('cascade');
+            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->integer('montant');
+            $table->date('date');
+            $table->timestamps();
         });
     }
 

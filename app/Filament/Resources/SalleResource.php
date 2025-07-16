@@ -52,7 +52,8 @@ class SalleResource extends Resource
 
                 Tables\Columns\TextColumn::make('capacite')
                     ->label('Capacité')
-                    ->sortable(),
+                    ->sortable()
+                    ->placeholder('Non spécifiée'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Créé le')

@@ -16,6 +16,3 @@ Route::middleware([ 'auth'])->prefix('carte-etudiante')->name('carte.')->group(f
 });
 
 
-Route::get('/test-csrf', function () {
-    return csrf_token();
-});

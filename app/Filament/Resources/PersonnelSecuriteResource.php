@@ -14,7 +14,11 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Filament\Notifications\Notification;
+use App\Mail\PersonnelCredentialsMail;
+
 
 class PersonnelSecuriteResource extends Resource
 {
@@ -28,7 +32,6 @@ class PersonnelSecuriteResource extends Resource
     
     protected static ?string $pluralModelLabel = 'Personnel de Sécurité';
     protected static ?string $navigationGroup = 'Gestion des Utilisateurs';
-
 
     public static function form(Form $form): Form
     {
@@ -51,7 +54,7 @@ class PersonnelSecuriteResource extends Resource
                             ->label('Email')
                             ->email()
                             ->required()
-                            ->unique(table: 'users', column: 'email', ignoreRecord: true),
+                            ->unique(table: 'personnel_securites', column: 'email', ignoreRecord: true),
                         
                         Forms\Components\TextInput::make('phone')
                             ->label('Téléphone')
@@ -62,13 +65,29 @@ class PersonnelSecuriteResource extends Resource
                             ->label('Poste')
                             ->nullable(),
                         
-                       Forms\Components\TextInput::make('password')
-                        ->label('Mot de passe')
-                        ->password()
-                        ->required(fn (string $context): bool => $context === 'create')
-                        ->rule(Password::min(8))
-                        ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
-                        ->dehydrated(fn ($state) => filled($state)), 
+                        // Champ informatif pour la création
+                        Forms\Components\Placeholder::make('password_info')
+                            ->label('Mot de passe')
+                            ->content('Un mot de passe sécurisé sera généré automatiquement et envoyé par email.')
+                            ->visible(fn (string $context): bool => $context === 'create'),
+                        
+                        // Champ pour la modification du mot de passe (optionnel)
+                        Forms\Components\TextInput::make('new_password')
+                            ->label('Nouveau mot de passe (optionnel)')
+                            ->password()
+                            ->visible(fn (string $context): bool => $context === 'edit')
+                            ->helperText('Laissez vide pour conserver le mot de passe actuel. Un nouveau mot de passe sera envoyé par email si modifié.'),
+                        
+                        // Checkbox pour renvoyer les informations par email
+                        Forms\Components\Checkbox::make('send_credentials_email')
+                            ->label('Envoyer les informations de connexion par email')
+                            ->default(true)
+                            ->visible(fn (string $context): bool => $context === 'create'),
+                        
+                        Forms\Components\Checkbox::make('resend_credentials_email')
+                            ->label('Renvoyer les informations de connexion par email')
+                            ->default(false)
+                            ->visible(fn (string $context): bool => $context === 'edit'),
                     ])->columns(2),
                
             ]);
@@ -110,6 +129,37 @@ class PersonnelSecuriteResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('resend_credentials')
+    ->label('Renvoyer les identifiants')
+    ->icon('heroicon-o-envelope')
+    ->color('info')
+    ->action(function (PersonnelSecurite $record) {
+        $newPassword = Str::random(12);
+
+        // Mettre à jour le mot de passe dans la base
+        $record->update([
+            'password' => Hash::make($newPassword)
+        ]);
+
+        try {
+            // Envoyer l'email directement (sans job)
+            Mail::to($record->email)->send(new PersonnelCredentialsMail($record, $newPassword, true));
+
+            Notification::make()
+                ->title('Identifiants renvoyés')
+                ->body('Les nouveaux identifiants ont été envoyés à ' . $record->email)
+                ->success()
+                ->send();
+
+        } catch (\Exception $e) {
+            Notification::make()
+                ->title('Erreur d’envoi')
+                ->body('Le mot de passe a été modifié, mais l’email n’a pas pu être envoyé.')
+                ->danger()
+                ->send();
+        }
+    })
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -125,7 +175,6 @@ class PersonnelSecuriteResource extends Resource
         ];
     }
  
-
     public static function getPages(): array
     {
         return [

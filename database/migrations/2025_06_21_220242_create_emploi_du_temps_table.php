@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('emploi_du_temps', function (Blueprint $table) {
             $table->id();
             $table->string('jour'); // Ex : lundi
-    $table->time('heure_debut');
-    $table->time('heure_fin');
-    $table->foreignId('cours_id')->constrained()->onDelete('cascade');
-    $table->foreignId('class_room_id')->constrained()->onDelete('cascade');
-    $table->foreignId('salle_id')->constrained()->onDelete('cascade');
-    $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->time('heure_debut');
+            $table->time('heure_fin');
+            $table->foreignId('cours_id')->constrained()->onDelete('cascade');
+            $table->foreignId('class_room_id')->constrained()->onDelete('cascade');
+            $table->foreignId('salle_id')->constrained()->onDelete('cascade');
+            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }

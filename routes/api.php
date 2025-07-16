@@ -15,6 +15,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/carte/{matricule}', [CarteEtudianteApiController::class, 'getInfos']);
+    Route::get('/carte/{matricule}/emploi', [CarteEtudianteApiController::class, 'getEmploiDuTemps']);
+
     // Ajouter ici d’autres routes sécurisées
     Route::put('/personnel/update-password', [AuthController::class, 'updatePassword']);
 

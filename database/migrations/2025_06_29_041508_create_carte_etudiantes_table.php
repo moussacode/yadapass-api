@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('carte_etudiantes', function (Blueprint $table) {
-           $table->id();
-     $table->foreignId('attribution_id')->constrained('attributions')->onDelete('cascade');
-    $table->string('qr_code')->unique();
-    $table->string('qr_data')->nullable();
-    $table->string('statut')->default('active');
-    $table->date('date_emission')->nullable();
-    $table->timestamps();
+            $table->id();
+            $table->foreignId('attribution_id')->constrained('attributions')->onDelete('cascade');
+            $table->string('qr_code')->unique();
+            $table->string('qr_data')->nullable();
+            $table->string('statut')->default('active');
+            $table->date('date_emission')->nullable();
+            $table->timestamps();
         });
     }
 

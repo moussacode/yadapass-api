@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('class_room_cours', function (Blueprint $table) {
             $table->id();
-             $table->foreignId('class_room_id')->constrained()->onDelete('cascade');
-    $table->foreignId('cours_id')->constrained()->onDelete('cascade');
-    $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('class_room_id')->constrained()->onDelete('cascade');
+            $table->foreignId('cours_id')->constrained()->onDelete('cascade');
+            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }

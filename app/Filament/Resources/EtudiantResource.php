@@ -41,6 +41,10 @@ class EtudiantResource extends Resource
                  
                     ->unique(ignoreRecord: true),
 
+                Forms\Components\TextInput::make('email')
+                    ->label('Email'),
+
+
                 FileUpload::make('photo')
                     ->label('Photo de l\'étudiant')
                     ->nullable()
@@ -86,6 +90,7 @@ class EtudiantResource extends Resource
                 Tables\Columns\TextColumn::make('matricule')->label('Matricule')->searchable(),
                 Tables\Columns\TextColumn::make('nom')->label('Nom')->searchable(),
                 Tables\Columns\TextColumn::make('prenom')->label('Prénom')->searchable(),
+                Tables\Columns\TextColumn::make('email')->label('Email')->searchable(),
                 Tables\Columns\TextColumn::make('date_naissance')->label('Date de naissance')->date(),
                 Tables\Columns\TextColumn::make('genre')->label('Genre')->placeholder('N/A'),
                 Tables\Columns\TextColumn::make('created_at')->label('Créé le')->dateTime('d/m/Y'),

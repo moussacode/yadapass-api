@@ -3,14 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use App\Models\EmploiDuTemps;
 
 class Etudiant extends Model
+
 {
+    use Notifiable;
     protected $fillable = [
         'matricule',
         'nom',
         'prenom',
+        'email',
         'photo',
         'adresse',
         'telephone',

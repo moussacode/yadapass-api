@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Attribution;
 use App\Models\CarteEtudiante;
+use App\Notifications\CarteEtudianteCreee;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -38,7 +39,7 @@ class AttributionObserver
             Log::info("✅ QR SVG sauvegardé : $filename");
 
             // Créer la carte étudiante
-            CarteEtudiante::create([
+           $carte = CarteEtudiante::create([
                 'attribution_id' => $attribution->id,
                 'qr_code' => $qrText,
                 'qr_data' => $filename, // chemin du fichier
@@ -48,9 +49,20 @@ class AttributionObserver
 
             Log::info("✅ Carte Étudiante créée pour attribution {$attribution->id}");
 
+                    // ✅ Envoi d’email
+        if (!empty($etudiant->email)) {
+            $etudiant->notify(new CarteEtudianteCreee($etudiant, $carte));
+            Log::info("📧 Notification envoyée à {$etudiant->email}");
+        } else {
+            Log::warning("⚠️ Aucun email pour l'étudiant {$etudiant->id}");
+        }
+
+
         } catch (\Exception $e) {
             Log::error("❌ Erreur AttributionObserver@created : " . $e->getMessage());
         }
+
+        
     }
 
     public function updated(Attribution $attribution): void {}
