@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 
 class ViewClassRoom extends ViewRecord
 {
+    
     protected static string $resource = ClassRoomResource::class;
 
 public  function table(Table $table): Table

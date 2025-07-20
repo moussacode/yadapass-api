@@ -30,22 +30,38 @@ class PaiementResource extends Resource
                 ->afterStateUpdated(fn($state, callable $set) => $set('fee_id', null)),
 
             Forms\Components\Select::make('fee_id')
-                ->label('Frais')
-                ->options(function (callable $get) {
-                    $etudiantId = $get('etudiant_id');
-                    if (!$etudiantId) return [];
+    ->label('Frais')
+    ->options(function (callable $get) {
+        $etudiantId = $get('etudiant_id');
+        if (!$etudiantId) return [];
 
-                    $attribution = \App\Models\Attribution::where('etudiant_id', $etudiantId)->latest()->first();
-                    if (!$attribution) return [];
+        $attribution = \App\Models\Attribution::where('etudiant_id', $etudiantId)->latest()->first();
+        if (!$attribution) return [];
 
-                    return \App\Models\Fee::where('class_room_id', $attribution->class_room_id)
-                        ->pluck('nom', 'id');
-                })
-                ->reactive()
-                ->required(),
+        return \App\Models\Fee::where('class_room_id', $attribution->class_room_id)
+            ->pluck('nom', 'id');
+    })
+    
+    ->disabled(fn (callable $get) => !$get('etudiant_id') || !\App\Models\Attribution::where('etudiant_id', $get('etudiant_id'))->latest()->first())
+    ->helperText(function (callable $get) {
+        $etudiantId = $get('etudiant_id');
+        if (!$etudiantId) return null;
+
+        $attribution = \App\Models\Attribution::where('etudiant_id', $etudiantId)->latest()->first();
+        if (!$attribution) {
+            return '⚠️ Cet étudiant n’a pas encore d’attribution. Veuillez l’attribuer à une classe pour afficher les frais.';
+        }
+
+        return null;
+    })
+    ->reactive()
+    
+    ->required(fn (callable $get) => \App\Models\Attribution::where('etudiant_id', $get('etudiant_id'))->exists()),
+
 
             Forms\Components\Placeholder::make('situation_frais')
                 ->label('Situation du frais')
+                ->columnSpanFull()
                 ->content(function (callable $get) {
                     $etudiantId = $get('etudiant_id');
                     $feeId = $get('fee_id');

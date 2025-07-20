@@ -31,6 +31,7 @@ class Etudiant extends Model
 {
     return $this->hasMany(Attribution::class);
 }
+
 public function getNomCompletAttribute()
 {
     return $this->nom . ' ' . $this->prenom;

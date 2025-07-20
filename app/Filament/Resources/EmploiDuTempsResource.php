@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EmploiDuTempsResource\Pages;
+use App\Models\Cours;
 use App\Models\EmploiDuTemps;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -16,6 +17,21 @@ class EmploiDuTempsResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationLabel = 'Emploi du temps';
     protected static ?string $pluralLabel = 'Emplois du temps';
+    function generateTimeOptions($startHour, $endHour, $stepMinutes = 30)
+{
+    $options = [];
+    $current = \Carbon\Carbon::createFromTime($startHour, 0);
+    $end = \Carbon\Carbon::createFromTime($endHour, 0);
+
+    while ($current <= $end) {
+        $label = $current->format('H:i');
+        $options[$label] = $label;
+        $current->addMinutes($stepMinutes);
+    }
+
+    return $options;
+}
+
 
     public static function form(Form $form): Form
     {
@@ -26,13 +42,28 @@ class EmploiDuTempsResource extends Resource
                         ->label('Classe')
                         ->relationship('classRoom', 'name')
                         ->required()
-                        ->searchable(),
 
-                    Forms\Components\Select::make('cours_id')
-                        ->label('Cours')
-                        ->relationship('cours', 'nom')
-                        ->required()
-                        ->searchable(),
+                        ->searchable()
+                        ->reactive(),
+
+                 
+
+Forms\Components\Select::make('cours_id')
+    ->label('Cours')
+    ->options(function (callable $get) {
+        $classRoomId = $get('class_room_id');
+        if (!$classRoomId) return [];
+
+        return \App\Models\ClassRoom::find($classRoomId)?->cours()->pluck('nom', 'cours.id')->toArray() ?? [];
+    })
+    ->reactive()
+    ->required()
+    ->disabled(fn (callable $get) => !$get('class_room_id'))
+    ->placeholder('Choisissez une classe d’abord')
+    ->searchable()
+    ->helperText('Les cours affichés dépendent de la classe sélectionnée.'),
+
+
 
 
                 ])->columns(3),
@@ -51,16 +82,18 @@ class EmploiDuTempsResource extends Resource
                         ])
                         ->required(),
 
-                    Forms\Components\TimePicker::make('heure_debut')
-                        ->label('Heure de début')
-                        ->required()
-                        ->seconds(false),
+                   Forms\Components\Select::make('heure_debut')
+    ->label('Heure de début')
+    ->options((new self())->generateTimeOptions(7, 20, 30))
+    ->required()
+    ->reactive(),
 
-                    Forms\Components\TimePicker::make('heure_fin')
-                        ->label('Heure de fin')
-                        ->required()
-                        ->seconds(false)
-                        ->after('heure_debut'),
+Forms\Components\Select::make('heure_fin')
+    ->label('Heure de fin')
+    ->options((new self())->generateTimeOptions(7, 21, 30))
+    ->required()
+    ->after('heure_debut'),
+
 
                     Forms\Components\Select::make('salle_id')
                         ->relationship('salle', 'nom')

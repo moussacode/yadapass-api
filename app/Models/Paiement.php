@@ -39,4 +39,41 @@ class Paiement extends Model
     {
         return number_format($this->montant, 0, ',', ' ') . ' FCFA';
     }
+    // App\Models\Paiement.php
+
+public static function getSituationFrais($etudiantId, $feeId)
+{
+    $fee = \App\Models\Fee::find($feeId);
+    if (!$fee) return null;
+
+    $totalPaye = self::where('etudiant_id', $etudiantId)
+        ->where('fee_id', $feeId)
+        ->sum('montant');
+
+    $reste = $fee->montant_total - $totalPaye;
+    $pourcentage = ($totalPaye / max($fee->montant_total, 1)) * 100;
+
+    $status = match (true) {
+        $reste <= 0 => 'Soldé',
+        $totalPaye > 0 => 'Partiellement payé',
+        default => 'Non payé'
+    };
+
+    $statusColor = match (true) {
+        $reste <= 0 => 'success',
+        $totalPaye > 0 => 'warning',
+        default => 'danger'
+    };
+
+    return [
+        'fee' => $fee,
+        'total' => $fee->montant_total,
+        'paye' => $totalPaye,
+        'reste' => $reste,
+        'pourcentage' => $pourcentage,
+        'status' => $status,
+        'statusColor' => $statusColor,
+    ];
+}
+
 }
