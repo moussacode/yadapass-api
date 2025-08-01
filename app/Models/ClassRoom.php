@@ -31,7 +31,10 @@ class ClassRoom extends Model
     }
 
  
-    
+    public function etudiants()
+{
+    return $this->hasManyThrough(Etudiant::class, Attribution::class);
+}
 
     
 

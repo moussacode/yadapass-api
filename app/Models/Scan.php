@@ -23,8 +23,14 @@ class Scan extends Model
         return $this->belongsTo(CarteEtudiante::class);
     }
 
-    public function admin()
+public function getMatriculeAttribute()
+{
+    return $this->carteEtudiante?->etudiant?->matricule ?? 'Inconnu';
+}
+
+     // Relation vers l'agent (personnel de sécurité) qui a validé ou fait le scan
+    public function agent()
     {
-        return $this->belongsTo(User::class, 'admin_id');
+        return $this->belongsTo(PersonnelSecurite::class, 'agent_id');
     }
 }

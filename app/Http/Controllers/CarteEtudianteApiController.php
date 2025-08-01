@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CarteEtudiante;
 use App\Models\Etudiant;
+use App\Models\Scan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -232,4 +235,36 @@ class CarteEtudianteApiController extends Controller
             ], 500);
         }
     }
+
+
+public function validerScanUnique(Request $request): JsonResponse
+{
+    $validated = $request->validate([
+        'matricule' => 'required|string',
+        'validation' => 'required|boolean',
+        'statut_acces' => 'required|string|in:accepte,refuse',
+        'commentaire' => ' nullable|string|max:255',
+    ]);
+
+    $matricule = strtoupper(trim($validated['matricule']));
+
+    $carte = CarteEtudiante::whereHas('etudiant', fn($q) => $q->where('matricule', $matricule))->first();
+
+    if (!$carte) {
+        return response()->json(['success' => false, 'message' => 'Carte non trouvée'], 404);
+    }
+
+    $scan = Scan::create([
+        'carte_etudiante_id' => $carte->id,
+        'agent_id' => Auth::id(),
+        'date_heure' => now(),
+        'validation' => $validated['validation'],
+        'statut_acces' => $validated['statut_acces'],
+        'commentaire' => $validated['commentaire'] ?? null,
+    ]);
+
+    return response()->json(['success' => true, 'message' => 'Scan enregistré', 'scan' => $scan]);
+}
+
+
 }

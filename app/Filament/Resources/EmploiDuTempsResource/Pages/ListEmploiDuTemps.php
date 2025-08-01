@@ -14,6 +14,13 @@ class ListEmploiDuTemps extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            
+            Actions\Action::make('nouveau_paiement')
+                ->label('Consulter le calendrier')
+                ->icon('heroicon-o-plus-circle')
+                ->color('primary')
+                ->url('/admin/emploi-du-temps/calendar')
+                ->openUrlInNewTab(false),
         ];
     }
 }

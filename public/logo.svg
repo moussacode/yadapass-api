@@ -1,0 +1,18 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo YadaPass">
+
+  <!-- Arrière-plan transparent, pour usage flexible -->
+
+  <!-- Symbole abstrait - fluidité + validation -->
+  <g stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="8">
+    <!-- Courbe principale fluide (accès, connexion) -->
+    <path d="M130 150 C180 80, 220 80, 270 150" stroke="#ff8c00"/>
+    <!-- Check stylisé (validation) intégré -->
+    <path d="M235 145 L260 180 L290 130" stroke="#18428a" stroke-width="10"/>
+  </g>
+
+  <!-- Texte rapproché -->
+  <text x="200" y="230" font-family="'Poppins', Arial, sans-serif" font-weight="700" font-size="52" text-anchor="middle" fill="#18428a" letter-spacing="1.2">
+    <tspan fill="#ff8c00">Yada</tspan><tspan>Pass</tspan>
+  </text>
+
+</svg>
