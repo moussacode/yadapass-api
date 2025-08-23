@@ -12,7 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 
 class EmploiDuTempsResource extends Resource
-{
+{     protected static ?string $navigationGroup = 'Academie';
     protected static ?string $model = EmploiDuTemps::class;
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationLabel = 'Emploi du temps';

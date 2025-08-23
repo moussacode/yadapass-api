@@ -19,7 +19,7 @@ use Filament\Forms\Set;
 class FeeResource extends Resource
 {
     protected static ?string $model = Fee::class;
-
+ protected static ?string $navigationGroup = 'Academie';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Frais';
     protected static ?string $pluralModelLabel = 'Frais';

@@ -18,7 +18,7 @@ class CarteEtudianteResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-identification';
     protected static ?string $navigationLabel = 'Cartes Étudiantes';
     protected static ?string $pluralModelLabel = 'Cartes Étudiantes';
-
+     protected static ?string $navigationGroup = 'Etudiants';
     public static function form(Form $form): Form
     {
         return $form

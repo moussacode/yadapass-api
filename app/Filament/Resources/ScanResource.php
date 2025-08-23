@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ScanResource extends Resource
 {
+    protected static ?string $navigationGroup = 'Etudiants';
     protected static ?string $model = Scan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

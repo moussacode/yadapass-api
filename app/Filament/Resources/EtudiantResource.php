@@ -14,10 +14,12 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EtudiantResource extends Resource
 {
+
+    protected static ?string $navigationGroup = 'Etudiants';
     protected static ?string $model = Etudiant::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
-    protected static ?string $navigationGroup = 'Gestion des Utilisateurs';
+   
     protected static ?string $navigationLabel = 'Étudiants';
     protected static ?string $modelLabel = 'Étudiant';
     protected static ?string $pluralModelLabel = 'Étudiants';
@@ -36,9 +38,12 @@ class EtudiantResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('matricule')
+                 Forms\Components\Placeholder::make('matricule')
                     ->label('Matricule')
-                    ->unique(ignoreRecord: true),
+
+                    ->content('Matricule de l\'étudiant est generé automatiquement')
+                            ->visible(fn (string $context): bool => $context === 'create'),
+                    
 
                 Forms\Components\TextInput::make('email')
                     ->label('Email'),
