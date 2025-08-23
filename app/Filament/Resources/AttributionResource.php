@@ -22,7 +22,7 @@ class AttributionResource extends Resource
     protected static ?string $model = Attribution::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+     protected static ?string $navigationGroup = 'Academie';
     public static function form(Form $form): Form
     {
         return $form
@@ -129,6 +129,35 @@ class AttributionResource extends Resource
                     ->modalHeading('Générer la carte étudiante')
                     ->modalDescription('Êtes-vous sûr de vouloir générer une carte pour cet étudiant ?')
                     ->modalSubmitActionLabel('Générer'),
+                
+                Action::make('resend_card_email')
+    ->label('Renvoyer email')
+    ->icon('heroicon-o-envelope')
+    ->color('primary')
+    ->visible(fn ($record) => $record->carteEtudiante)
+    ->action(function ($record) {
+        $etudiant = $record->etudiant;
+        $carte = $record->carteEtudiante;
+
+        if ($etudiant && $etudiant->email && $carte) {
+            $etudiant->notify(new \App\Notifications\CarteEtudianteCreee($etudiant, $carte));
+            \Filament\Notifications\Notification::make()
+                ->title('📧 Email envoyé')
+                ->success()
+                ->body("La carte a été renvoyée à {$etudiant->email}.")
+                ->send();
+        } else {
+            \Filament\Notifications\Notification::make()
+                ->title('❌ Échec de l’envoi')
+                ->danger()
+                ->body('Impossible d’envoyer l’email (étudiant sans email ou carte manquante).')
+                ->send();
+        }
+    })
+    ->requiresConfirmation()
+    ->modalHeading('Renvoyer la carte par email')
+    ->modalDescription('Souhaitez-vous renvoyer la carte étudiante à l’adresse email de cet étudiant ?')
+    ->modalSubmitActionLabel('Envoyer')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

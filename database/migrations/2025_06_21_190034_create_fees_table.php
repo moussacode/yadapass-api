@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('fees', function (Blueprint $table) {
             $table->id();
-            
-    $table->foreignId('class_room_id')->constrained()->onDelete('cascade');
-    $table->string('nom');
-    $table->enum('type', ['inscription', 'scolarite']);
-    $table->integer('montant_total');
+            $table->foreignId('class_room_id')->constrained()->onDelete('cascade');
+            $table->string('nom');
+            $table->enum('type', ['inscription', 'scolarite']);
+            $table->integer('montant_total');
             $table->timestamps();
         });
     }

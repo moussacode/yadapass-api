@@ -57,7 +57,7 @@ class ClassRoomResource extends Resource
         return $table
             ->columns([
                  Tables\Columns\TextColumn::make('name')
-                    ->label('Nom')
+                    ->label('Nom Classe')
                     ->sortable()
                     ->searchable(),
 

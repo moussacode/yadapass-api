@@ -14,6 +14,7 @@ class ListPaiements extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            
         ];
     }
 }

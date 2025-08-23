@@ -37,8 +37,20 @@ class AcademicSessionResource extends Resource
             ->required(),
 
         Forms\Components\Toggle::make('active')
-            ->label('Active')
-            ->default(false),
+            ->label('Année active')
+    ->afterStateUpdated(function ($state, $set, $get, $record) {
+        if ($state) {
+            // désactive les autres années
+            \App\Models\AcademicSession::where('id', '!=', $record->id)->update(['active' => false]);
+
+            // message de confirmation
+            \Filament\Notifications\Notification::make()
+                ->title('Année activée')
+                ->body("L'année {$record->name} est maintenant la seule active.")
+                ->success()
+                ->send();
+        }
+    }),
 
          Forms\Components\Hidden::make('admin_id')
                     ->default(\Illuminate\Support\Facades\Auth::user()?->id),
@@ -54,6 +66,7 @@ class AcademicSessionResource extends Resource
         Tables\Columns\TextColumn::make('end_date')->label('Fin')->date(),
         Tables\Columns\IconColumn::make('active')->label('Active')->boolean(),
         Tables\Columns\TextColumn::make('admin.nom')->label('Créée par'),
+        
             ])
             ->filters([
                 //

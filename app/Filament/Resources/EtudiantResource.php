@@ -14,10 +14,12 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EtudiantResource extends Resource
 {
+
+    protected static ?string $navigationGroup = 'Etudiants';
     protected static ?string $model = Etudiant::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
-    protected static ?string $navigationGroup = 'Gestion des Utilisateurs';
+   
     protected static ?string $navigationLabel = 'Étudiants';
     protected static ?string $modelLabel = 'Étudiant';
     protected static ?string $pluralModelLabel = 'Étudiants';
@@ -36,10 +38,15 @@ class EtudiantResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('matricule')
+                 Forms\Components\Placeholder::make('matricule')
                     ->label('Matricule')
-                 
-                    ->unique(ignoreRecord: true),
+
+                    ->content('Matricule de l\'étudiant est generé automatiquement')
+                            ->visible(fn (string $context): bool => $context === 'create'),
+                    
+
+                Forms\Components\TextInput::make('email')
+                    ->label('Email'),
 
                 FileUpload::make('photo')
                     ->label('Photo de l\'étudiant')
@@ -83,24 +90,124 @@ class EtudiantResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('matricule')->label('Matricule')->searchable(),
-                Tables\Columns\TextColumn::make('nom')->label('Nom')->searchable(),
-                Tables\Columns\TextColumn::make('prenom')->label('Prénom')->searchable(),
-                Tables\Columns\TextColumn::make('date_naissance')->label('Date de naissance')->date(),
-                Tables\Columns\TextColumn::make('genre')->label('Genre')->placeholder('N/A'),
-                Tables\Columns\TextColumn::make('created_at')->label('Créé le')->dateTime('d/m/Y'),
+                Tables\Columns\ImageColumn::make('photo')
+                    ->label('Photo')
+                    ->disk('public')
+                    ->height(40)
+                    ->width(40)
+                    ->circular()
+                    ->defaultImageUrl(url('/images/default-avatar.png')),
+                
+                Tables\Columns\TextColumn::make('matricule')
+                    ->label('Matricule')
+                    ->searchable()
+                    ->sortable()
+                    ->copyable(),
+                
+                Tables\Columns\TextColumn::make('nom')
+                    ->label('Nom')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+                
+                Tables\Columns\TextColumn::make('prenom')
+                    ->label('Prénom')
+                    ->searchable()
+                    ->sortable(),
+                
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Email')
+                    ->searchable()
+                    ->copyable(),
+                
+                Tables\Columns\TextColumn::make('date_naissance')
+                    ->label('Date de naissance')
+                    ->date('d/m/Y')
+                    ->sortable(),
+                
+                Tables\Columns\TextColumn::make('genre')
+                    ->label('Genre')
+                    
+                    ->color(fn (string $state): string => match ($state) {
+                        'Homme' => 'blue',
+                        'Femme' => 'pink',
+                        default => 'gray',
+                    })
+                    ->placeholder('N/A'),
+                
+                // Colonne pour afficher l'attribution actuelle
+                Tables\Columns\TextColumn::make('attribution_actuelle')
+                    ->label('Classe actuelle')
+                    ->getStateUsing(function (Etudiant $record): ?string {
+                        $attribution = \App\Models\Attribution::where('etudiant_id', $record->id)
+                            ->with('classRoom')
+                            ->latest()
+                            ->first();
+                        return $attribution?->classRoom?->name ?? 'Non attribué';
+                    })
+                    ->badge()
+                    ->color(fn (string $state): string => $state === 'Non attribué' ? 'danger' : 'success'),
+                
+            
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Créé le')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                // à ajouter plus tard si nécessaire
+                Tables\Filters\SelectFilter::make('genre')
+                    ->options([
+                        'Homme' => 'Homme',
+                        'Femme' => 'Femme',
+                        'Autre' => 'Autre',
+                    ]),
+                
+                Tables\Filters\Filter::make('avec_paiements')
+                    ->label('Avec paiements')
+                    ->query(fn (Builder $query): Builder => 
+                        $query->whereHas('paiements')
+                    ),
+                
+                Tables\Filters\Filter::make('sans_paiements')
+                    ->label('Sans paiements')
+                    ->query(fn (Builder $query): Builder => 
+                        $query->whereDoesntHave('paiements')
+                    ),
+                
+                Tables\Filters\Filter::make('avec_attribution')
+                    ->label('Avec attribution')
+                    ->query(fn (Builder $query): Builder => 
+                        $query->whereHas('attributions')
+                    ),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('Voir')
+                    ->icon('heroicon-o-eye'),
+                
+                Tables\Actions\EditAction::make()
+                    ->label('Modifier')
+                    ->icon('heroicon-o-pencil-square'),
+                
+                Tables\Actions\Action::make('nouveau_paiement')
+                    ->label('Paiement')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->color('success')
+                    ->url(fn (Etudiant $record): string => '/admin/paiements/create?etudiant_id=' . $record->id),
+                
+                Tables\Actions\Action::make('voir_paiements')
+                    ->label('Ses paiements')
+                    ->icon('heroicon-o-list-bullet')
+                    ->color('info')
+                    ->url(fn (Etudiant $record): string => '/admin/paiements?tableFilters[etudiant_id][value]=' . $record->id),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
@@ -115,7 +222,18 @@ class EtudiantResource extends Resource
         return [
             'index' => Pages\ListEtudiants::route('/'),
             'create' => Pages\CreateEtudiant::route('/create'),
+            'view' => Pages\ViewEtudiant::route('/{record}'),
             'edit' => Pages\EditEtudiant::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['matricule', 'nom', 'prenom', 'email'];
     }
 }

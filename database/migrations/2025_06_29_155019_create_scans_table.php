@@ -17,10 +17,8 @@ return new class extends Migration
             $table->string('statut_acces'); // accepté / refusé
             $table->boolean('validation')->default(false); // validé par l’agent ou pas
             $table->string('commentaire')->nullable(); // info complémentaire (ex: “carte expirée”)
-
             $table->foreignId('carte_etudiante_id')->constrained()->onDelete('cascade'); // lien vers la carte
-            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null'); // agent qui a validé
-
+             $table->foreignId('agent_id')->nullable()->constrained('personnel_securites')->onDelete('set null'); // agent de sécurité
             $table->timestamps();
         });
     }

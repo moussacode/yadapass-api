@@ -26,12 +26,17 @@ class CarteEtudianteController extends Controller
         $carteInfos = $carte->getCarteInfos();
         
         $pdf = Pdf::loadView('carte.print', compact('carte', 'carteInfos'))
-            ->setPaper('A4', 'portrait')
-            ->setOptions([
-                'dpi' => 300,
-                'defaultFont' => 'Arial'
-            ]);
-        
+        ->setPaper([0, 0, 242.83, 153.00])
+        ->setOptions([
+            'dpi' => 300,
+            'defaultFont' => 'Arial',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'margin-top' => 0,
+            'margin-right' => 0,
+            'margin-bottom' => 0,
+            'margin-left' => 0,
+        ]);
         return $pdf->stream("carte_{$carteInfos['matricule']}.pdf");
     }
 

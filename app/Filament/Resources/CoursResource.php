@@ -119,7 +119,8 @@ Tables\Columns\TextColumn::make('admin.nom')
                             ->unique()
                             ->join(', ');
                     })
-                    ->sortable(false),
+                    ->sortable(false)
+                    ->placeholder('Aucune session'),
             ])
             ->filters([
                 //

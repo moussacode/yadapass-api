@@ -1,251 +1,461 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Carte Étudiante - {{ $carteInfos['nom_complet'] }}</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Carte Étudiante - {{ $carteInfos['nom_complet'] ?? 'Nom Complet' }}</title>
     <style>
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background: #f0f0f0;
-            padding: 20px;
-        }
-        
-        .carte-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        
-        .carte-container {
-            width: 350px;
-            height: 225px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            position: relative;
-            overflow: hidden;
-            color: white;
-            padding: 20px;
-        }
-        
-        .carte-container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 2px, transparent 2px),
-                radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 2px, transparent 2px);
-            background-size: 50px 50px;
-            opacity: 0.5;
-        }
-        
-        .carte-content {
-            position: relative;
-            z-index: 1;
-            height: 100%;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .left-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .header-section {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .photo-container {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid white;
-            overflow: hidden;
-            background: #f0f0f0;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-        
-        .photo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .photo-placeholder {
-            width: 100%;
-            height: 100%;
-            background: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 12px;
-        }
-        
-        .student-info {
-            flex: 1;
-        }
-        
-        .student-name {
-            font-size: 18px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'DejaVu Sans', Arial, sans-serif;
+    background: white;
+    font-size: 3.2mm;
+    line-height: 1.2;
+}
+
+.page {
+    width: 100%;
+    background: white;
+}
+
+.carte {
+    width: 80.6mm;
+    height: 48.6mm;
+    border: 0.5mm solid #003366;
+    padding: 2mm;
+    background: #f8f9fa;
+    position: relative;
+    margin: 0 auto;
+    border-radius: 2mm;
+}
+
+/* Bande décorative supérieure */
+.top-band {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1.5mm;
+    background: #003366;
+    border-radius: 2mm 2mm 0 0;
+}
+
+/* Ligne de sécurité */
+.security-line {
+    position: absolute;
+    top: 1.6mm;
+    left: 0;
+    right: 0;
+    height: 0.3mm;
+    background: #004080;
+}
+
+/* Section supérieure */
+.header {
+    width: 100%;
+    margin-top: 3mm;
+    margin-bottom: 2mm;
+    height: 10mm;
+    position: relative;
+}
+
+/* Logo ESTM (haut droite) */
+.logo-section {
+    position: absolute;
+    top: 0;
+    right: 0;
+    text-align: right;
+    width: 20mm;
+}
+
+.logo {
+    width: 18mm;
+    height: 8mm;
+    background: white;
+    border: 0.3mm solid #003366;
+    border-radius: 1mm;
+    margin: 0 0 1mm auto;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 8mm;
+}
+
+.logo-placeholder {
+    font-size: 2mm;
+    color: #003366;
+    font-weight: bold;
+}
+
+.institution {
+    font-size: 2mm;
+    font-weight: bold;
+    color: #003366;
+    text-align: right;
+    line-height: 1.1;
+}
+
+/* Informations étudiantes (haut gauche) */
+.student-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 55mm;
+}
+
+.student-year {
+    font-size: 2.2mm;
+    font-weight: bold;
+    color: #003366;
+    margin-bottom: 0.5mm;
+}
+
+.student-type {
+    font-size: 2mm;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Section principale */
+.main-content {
+    width: 100%;
+    margin-bottom: 2mm;
+    position: relative;
+    height: 28mm;
+}
+
+/* Informations étudiant (à gauche) */
+.info-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 60mm;
+    height: 28mm;
+}
+
+.nom {
+    font-size: 3mm;
+    font-weight: bold;
+    color: #003366;
+    text-transform: uppercase;
+    letter-spacing: 0.2mm;
+    margin-bottom: 1mm;
+    border-bottom: 0.2mm solid #003366;
+    padding-bottom: 0.8mm;
+}
+
+.info-row {
+    margin-bottom: 0.3mm;
+    font-size: 2mm;
+    line-height: 1.2;
+}
+
+.info-row .label {
+    font-weight: bold;
+    color: #003366;
+    display: inline-block;
+    width: 15mm;
+    margin-right: 1mm;
+}
+
+.info-row .value {
+    color: #333;
+}
+
+.status {
+    font-size: 1.8mm;
+    font-weight: bold;
+    color: #d9534f;
+    background: #f8d7da;
+    padding: 0.5mm 1mm;
+    border-radius: 1mm;
+    display: inline-block;
+    margin-top: 1mm;
+}
+
+/* Photo (à droite) */
+.photo {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 22mm;
+    height: 28mm;
+    border: 0.5mm solid #003366;
+    background-color: #f5f5f5;
+    border-radius: 1mm;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 28mm;
+}
+
+.photo-placeholder {
+    font-size: 2mm;
+    color: #666;
+    font-weight: bold;
+}
+
+/* QR Code */
+.qr {
+    position: absolute;
+    bottom: 2mm;
+    left: 2mm;
+    width: 12mm;
+    height: 12mm;
+    border: 0.3mm solid #003366;
+    padding: 0.5mm;
+    background: white;
+    border-radius: 1mm;
+    text-align: center;
+    line-height: 10mm;
+}
+
+.qr-placeholder {
+    font-size: 1.5mm;
+    color: #666;
+    font-weight: bold;
+}
+
+/* Pied de page */
+.footer {
+    position: absolute;
+    bottom: 1mm;
+    
+    right: 50%;
+    padding: 1mm;
+    font-size: 1.5mm;
+    color: #003366;
+    border-top: 0.2mm solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.school-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5mm;
+}
+
+.school-location {
+    font-weight: bold;
+}
+
+.school-contact {
+    font-size: 1.4mm;
+    color: #666;
+}
+
+
+        .official-text {
+            float: right;
+            font-size: 5px;
             font-weight: bold;
-            line-height: 1.2;
-            margin-bottom: 5px;
-        }
-        
-        .student-id {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        .details-section {
-            font-size: 13px;
-            line-height: 1.4;
-        }
-        
-        .details-section p {
-            margin-bottom: 3px;
-        }
-        
-        .right-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100px;
-        }
-        
-        .qr-code {
-            width: 70px;
-            height: 70px;
-            background: white;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-            margin-bottom: 8px;
+            color: #003366;
+            margin-top: 3px;
         }
 
-        .qr-code img {
+        .clearfix {
+            clear: both;
+        }
+
+        /* Ligne de sécurité */
+        .security-line {
+            position: absolute;
+            top: 6px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #004080;
+        }
+
+        /* Styles pour les images si présentes */
+        .logo img,
+        .photo img,
+        .qr img {
             max-width: 100%;
             max-height: 100%;
-        }
-        
-        .qr-label {
-            font-size: 10px;
-            text-align: center;
-            opacity: 0.8;
-        }
-        
-        .footer {
-            position: absolute;
-            bottom: 15px;
-            left: 20px;
-            right: 20px;
-            text-align: center;
-            font-size: 11px;
-            opacity: 0.8;
-            font-weight: bold;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: bold;
-            background: rgba(255,255,255,0.2);
-            margin-top: 5px;
-        }
-        
-        .status-active {
-            background: rgba(34, 197, 94, 0.8);
-        }
-        
-        .status-inactive {
-            background: rgba(251, 191, 36, 0.8);
-        }
-        
-        .status-expired {
-            background: rgba(239, 68, 68, 0.8);
-        }
 
-        /* Print styles */
-        @media print {
-            body {
-                background: white !important;
-                padding: 0 !important;
-            }
-            .carte-container {
-                box-shadow: none !important;
-                background: white !important;
-                border-radius: 0 !important;
-                color: black !important;
-                -webkit-print-color-adjust: exact;
-            }
-            .carte-container::before {
-                display: none !important;
-            }
-            .status-badge {
-                background: none !important;
-                color: black !important;
-            }
+
+            object-fit: cover;
         }
     </style>
 </head>
 <body>
-    <div class="carte-wrapper">
-        <div class="carte-container">
-            <div class="carte-content">
-                <div class="left-section">
-                    <div class="header-section">
-                        <div class="photo-container">
-                            @if($carteInfos['photo'])
-                                <img src="{{ asset('storage/' . $carteInfos['photo']) }}" alt="Photo étudiant" />
-                            @else
-                                <div class="photo-placeholder">Photo</div>
-                            @endif
-                        </div>
-                        <div class="student-info">
-                            <div class="student-name">{{ $carteInfos['nom_complet'] }}</div>
-                            <div class="student-id">{{ $carteInfos['matricule'] }}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="details-section">
-                        <p><strong>Classe:</strong> {{ $carteInfos['classe'] }}</p>
-                        <p><strong>Année:</strong> {{ $carteInfos['annee_academique'] }}</p>
-                        <p><strong>Émise le:</strong> {{ \Carbon\Carbon::parse($carteInfos['date_emission'])->format('d/m/Y') }}</p>
-                        <div class="status-badge status-{{ $carteInfos['statut'] }}">
-                            {{ ucfirst($carteInfos['statut']) }}
-                        </div>
-                    </div>
+@php
+// Configuration mémoire pour DomPDF
+ini_set('memory_limit', '256M');
+
+// Fonction pour traiter les images de manière efficace
+function processImage($imagePath) {
+    // Image transparente 1x1 par défaut
+    $transparentImage = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    
+    if (empty($imagePath) || !file_exists($imagePath)) {
+        return $transparentImage;
+    }
+
+    try {
+        // Lecture par chunks pour éviter les problèmes de mémoire
+        $handle = fopen($imagePath, 'rb');
+        if (!$handle) {
+            return $transparentImage;
+        }
+        
+        $contents = '';
+        while (!feof($handle)) {
+            $contents .= fread($handle, 8192); // Lecture par blocs de 8KB
+        }
+        fclose($handle);
+
+        return base64_encode($contents);
+    } catch (Exception $e) {
+        return $transparentImage;
+    }
+}
+
+// Fonction pour déterminer le type MIME d'une image
+function getImageMimeType($imagePath) {
+    if (!file_exists($imagePath)) {
+        return 'image/png';
+    }
+    
+    $info = getimagesize($imagePath);
+    return $info['mime'] ?? 'image/png';
+}
+
+// Traitement des images
+$logoPath = '';
+$photoPath = '';
+$qrPath = '';
+
+$logoPath = public_path('storage/' . 'ESTM.png'); // Changé en PNG pour meilleure compatibilité
+
+if (isset($carteInfos['photo']) && $carteInfos['photo']) {
+    $photoPath = public_path('storage/' . $carteInfos['photo']);
+}
+
+if (isset($carteInfos['qr_data']) && $carteInfos['qr_data']) {
+    $qrPath = public_path('storage/' . $carteInfos['qr_data']);
+}
+
+// Encodage base64 des images
+$logoBase64 = processImage($logoPath);
+$photoBase64 = processImage($photoPath);
+$qrBase64 = processImage($qrPath);
+
+// Types MIME
+$logoMime = getImageMimeType($logoPath);
+$photoMime = getImageMimeType($photoPath);
+$qrMime = getImageMimeType($qrPath);
+@endphp
+
+    <div class="page">
+        <div class="carte">
+            <!-- Bande décorative supérieure -->
+            <div class="top-band"></div>
+            
+            <!-- Ligne de sécurité -->
+            <div class="security-line"></div>
+            
+            <!-- Section supérieure -->
+            <div class="header">
+                <!-- Informations étudiantes (haut gauche) -->
+                <div class="student-header">
+                    <div class="student-year">{{ $carteInfos['annee_academique'] ?? '2024-2025' }}</div>
+                    <div class="student-type">CARTE ÉTUDIANTE</div>
                 </div>
                 
-                <div class="right-section">
-                    <div class="qr-code">
-                        <img src="{{ asset('storage/' . $carteInfos['qr_data']) }}" alt="QR Code" />
+                <!-- Logo et nom école (haut droite) -->
+                <div class="logo-section">
+                    <div class="logo">
+                        @if($logoBase64 && $logoPath && file_exists($logoPath))
+                            <img src="data:{{ $logoMime }};base64,{{ $logoBase64 }}" alt="Logo ESTM">
+                        @else
+                            <div class="logo-placeholder">ESTM</div>
+                        @endif
                     </div>
-                    <div class="qr-label">Code QR</div>
+                    
                 </div>
             </div>
             
+            <!-- Section principale -->
+            <div class="main-content">
+                <!-- Informations étudiant (à gauche) -->
+                <div class="info-section">
+                    <div class="nom">{{ $carteInfos['nom_complet'] ?? 'NOM COMPLET' }}</div>
+                    
+                    <div class="info-row">
+                        <span class="label">Matricule:</span>
+                        <span class="value">{{ $carteInfos['matricule'] ?? 'N/A' }}</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="label">Classe:</span>
+                        <span class="value">{{ $carteInfos['classe'] ?? 'N/A' }}</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="label">Émise le:</span>
+                        <span class="value">
+                            @if(isset($carteInfos['date_emission']))
+                                {{ \Carbon\Carbon::parse($carteInfos['date_emission'])->format('d/m/Y') }}
+                            @else
+                                {{ date('d/m/Y') }}
+                            @endif
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Date de nais:</span>
+                        <span class="value">
+                            @if(isset($carteInfos['date_naissance']))
+                                {{ \Carbon\Carbon::parse($carteInfos['date_naissance'])->format('d/m/Y') }}
+                            @else
+                                {{ "N/A" }}
+                            @endif
+                        </span>
+                    </div>
+                    
+                    
+                    @if(isset($carteInfos['statut']) && $carteInfos['statut'])
+                        <div class="status">{{ strtoupper($carteInfos['statut']) }}</div>
+                    @endif
+                </div>
+                
+                <!-- Photo (à droite) -->
+                <div class="photo">
+                    @if($photoBase64 && $photoPath && file_exists($photoPath))
+                        <img src="data:{{ $photoMime }};base64,{{ $photoBase64 }}" alt="Photo étudiant">
+                    @else
+                        <div class="photo-placeholder">PHOTO</div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- QR Code -->
+            <div class="qr">
+                @if($qrBase64 && $qrPath && file_exists($qrPath))
+                    <img src="data:{{ $qrMime }};base64,{{ $qrBase64 }}" alt="QR Code">
+                @else
+                    <div class="qr-placeholder">QR</div>
+                @endif
+            </div>
+
+            <!-- Pied de page avec informations école -->
             <div class="footer">
-                CARTE ÉTUDIANTE OFFICIELLE
+                <div class="footer-content">
+                    <div class="school-info">
+                        <div class="school-location">Dakar, Sénégal</div>
+                        <div class="school-contact">
+                            contact@estm.sn • www.estm.sn
+                        </div>
+                    </div>
+                    <!-- <div class="official-text">OFFICIELLE</div> -->
+                    <div class="clearfix"></div>
+                </div>
             </div>
         </div>
     </div>

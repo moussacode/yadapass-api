@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 class CarteEtudiante extends Model
 {
       protected $fillable = [
@@ -34,9 +34,35 @@ class CarteEtudiante extends Model
         'qr_code' => $this->qr_code,      // Texte QR (matricule)
         'qr_data' => $this->qr_data,      // Image QR base64 à afficher
         'date_emission' => $this->date_emission,
+        'date_naissance' => $etudiant->date_naissance  ?? 'N/A',
         'statut' => $this->statut,
         ];
     }
+ 
+
+public function generatePdf()
+{
+    $carteInfos = $this->getCarteInfos();
+
+    $pdf = Pdf::loadView('carte.print', [
+        'carte' => $this,
+        'carteInfos' => $carteInfos,
+    ])
+    ->setPaper([0, 0, 242.83, 153.00]) // Format carte
+    ->setOptions([
+        'dpi' => 300,
+        'defaultFont' => 'Arial',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => true,
+        'margin-top' => 0,
+        'margin-right' => 0,
+        'margin-bottom' => 0,
+        'margin-left' => 0,
+    ]);
+
+    return $pdf->output(); // retourne le contenu du PDF (utilisé dans le mail)
+}
+
     public function attribution()
     {
         return $this->belongsTo(Attribution::class);
